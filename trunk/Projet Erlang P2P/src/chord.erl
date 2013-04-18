@@ -7,16 +7,28 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([lookup/1, get/1, put/2]).
+%-export([lookup/1,gets/1,puts/2]).
+
+%Node
+%node(Id,Succ,Table)-> ok.
 
 % Lookup/1
-lookup(HashedKey) -> ok.
+%lookup(HashedKey) -> ok.
 
 % get/1
-get(HashedKey) -> ok.
-
+%gets(HashedKey) -> 
+	%identifiant du succ qui est responsable du Hashedkey
+%	Who=lookup(Hashedkey),
+	
+	%recupère le hashtable
+	%node(Who,Succ,HTable)-> HTable,
+	%Value -> findValue(Htable).
+	
 % put/2
-put(HashedKey, Data) -> ok.
+%puts(HashedKey, Data) -> ok.
+
+  
+
 
 %% ====================================================================
 %% Internal functions
