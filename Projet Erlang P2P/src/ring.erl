@@ -37,7 +37,9 @@ launch(Mod, Fun, Names) ->
 							   {crypto:sha(term_to_binary(Couple)), Couple}
 					   end, Names),
 	Sorted = lists:sort(Hashed),
-	build(Mod, Fun, Sorted).
+	build(Mod, Fun, Sorted),
+	{mbox, gui@localhost} ! Sorted,
+	io:format("build finished ~w~n", [Sorted]).
 
 
 %% ====================================================================
@@ -50,7 +52,7 @@ launch(Mod, Fun, Names) ->
 %% @param Fun The function to call when the ring is finished
 %% @param H The structure {id, {name, node}} of the new node
 %% @param First The Pid of the first node of the ring
-%% @return The Pid of the new node
+%% @return The Id of the new node
 build_aux(Mod, Fun, [H], First) ->
 	Pid = spawn(?MODULE, init, [Mod, Fun, H]),
 	Pid ! {next, First},
@@ -61,7 +63,7 @@ build_aux(Mod, Fun, [H], First) ->
 %% @param H The structure {id, {name, node}} of the new node
 %% @param T The Names of the following nodes
 %% @param First The Pid of the first node of the ring
-%% @return The Pid of the new node
+%% @return The Id of the new node
 build_aux(Mod, Fun, [H|T], First) ->
 	Pid = spawn(?MODULE, init, [Mod, Fun, H]),
 	Pid ! {next, build_aux(Mod, Fun, T, First)},

@@ -12,7 +12,9 @@
 chord(NodeId, HashTable, NextId) ->
 	io:format("IN CHORD: ~w -> ~w~n", [target(NodeId), target(NextId)]),
 	receive
-		{lookup, Key} -> io:format("RECEIVED: ~w -> ~w~n", [target(NodeId), Key]);
+		{lookup, Who, Key} -> Who ! lookup(NodeId, NextId, Key);
+		{get, Who, Key} -> Who ! get(NodeId, HashTable, NextId, Key);
+		{put, _, Key, Data} -> put(NodeId, HashTable, NextId, Key, Data);
 		exit -> io:format("EXITING: ~w~n", [target(NodeId)]), exit(target(NodeId));
 		_ -> ok
 	end,
@@ -35,20 +37,13 @@ id({Id, _}) -> Id.
 %% @return The target
 target({_, Target}) -> Target.
 
-%Node
-%node(Id,Succ,Table)-> ok.
+%%
+lookup(NodeId, NextId, Key) -> ok.
 
-% Lookup/1
-%lookup(HashedKey) -> ok.
+%%
+get(NodeId, HashTable, NextId, Key) -> ok.
 
-% get/1
-%gets(HashedKey) -> 
-	%identifiant du succ qui est responsable du Hashedkey
-%	Who=lookup(Hashedkey),
-	
-	%recupère le hashtable
-	%node(Who,Succ,HTable)-> HTable,
-	%Value -> findValue(Htable).
-	
-% put/2
-%puts(HashedKey, Data) -> ok.
+%%
+put(NodeId, HashTable, NextId, Key, Data) -> ok.
+
+
