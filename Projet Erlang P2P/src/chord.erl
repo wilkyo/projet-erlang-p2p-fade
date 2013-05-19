@@ -38,12 +38,38 @@ id({Id, _}) -> Id.
 target({_, Target}) -> Target.
 
 %%
-lookup(NodeId, NextId, Key) -> ok.
+lookup(NodeId, NextId, Key) ->
+	X = id(NodeId),
+	Y = id(NextId),
+	if 
+		((Key>X) and (Key<Y)) ->
+		 		NextId;
+		true -> target(NextId) ! {lookup, Key}
+	end,
+	receive 
+		{lookup, Key} -> lookup(NodeId, NextId, Key)
+	end.
 
 %%
-get(NodeId, HashTable, NextId, Key) -> ok.
+get(NodeId, HashTable, NextId, Key) -> 
+	N = lookup(Key,NodeId,NextId),
+	case N of
+		NodeId -> 
+			M = dict:find(Key,HashTable),
+			case M of
+			 {ok, Value} -> Value;
+			 _else -> io:format("KEY NOT FOUND")
+			end;
+		_else -> false
+	end.
+	
 
 %%
-put(NodeId, HashTable, NextId, Key, Data) -> ok.
+put(NodeId, HashTable, NextId, Key, Data) ->
+	N = lookup(NodeId,NextId,Key),
+	case N of
+		NodeId -> HashTable = dict:store(Key,Data,HashTable);
+		_else -> ok
+	end.
 
 
