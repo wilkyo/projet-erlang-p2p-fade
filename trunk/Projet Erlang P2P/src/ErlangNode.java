@@ -1,20 +1,35 @@
 package graphics;
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.image.ImageObserver;
 import java.io.IOException;
+import java.text.AttributedCharacterIterator;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JFrame;
 
 import com.ericsson.otp.erlang.*; 
 
 public class ErlangNode extends OtpNode{
 	
 	OtpMbox mbox;
-	
+	static List<Node> listNode=new ArrayList<Node>();
 	
 	public ErlangNode(String nameNode) throws IOException {
 		super(nameNode);
 		// TODO Auto-generated constructor stub
 	}
 
-	public boolean ping(){
-		if (this.ping("sam@localhost",2000)) {
+	public boolean ping(String serverName){
+		if (this.ping(serverName,2000)) {
 			System.out.println("remote is up");
 			return true;
 		}
@@ -30,15 +45,15 @@ public class ErlangNode extends OtpNode{
 		OtpErlangTuple msg;
 		OtpErlangPid pidfrom;
 		mbox=node.createMbox(boxname);
-		OtpErlangObject o;
+		OtpErlangObject objet;
 		while(true){
 			
 			try{
 				//attend l'envoie du message
-				o= mbox.receive();
+				objet= mbox.receive();
 				
-				if(o instanceof OtpErlangTuple){
-					msg = (OtpErlangTuple)o;
+				if(objet instanceof OtpErlangTuple){
+					msg = (OtpErlangTuple)objet;
 					pidfrom = (OtpErlangPid)(msg.elementAt(0));
 					System.out.println("Receive something from {< "+pidfrom+" >, "+msg.elementAt(1)+" }");
 					return pidfrom;
@@ -51,7 +66,37 @@ public class ErlangNode extends OtpNode{
 		}
 	}
 	
-
+	public OtpErlangPid receiveList(ErlangNode node,String boxname) throws OtpErlangExit, OtpErlangDecodeException{
+		OtpNode myNode=null;
+		OtpErlangList message;
+		OtpErlangPid pidfrom;
+		mbox=node.createMbox(boxname);
+		OtpErlangObject objet;
+		OtpErlangList list;
+		while(true){
+			objet= mbox.receive();
+			
+			//System.out.println(objet);
+			message=(OtpErlangList) objet;
+			//list=(OtpErlangList) message.elementAt(1); //recupère la liste
+			for(OtpErlangObject elemList: message){
+				OtpErlangTuple idHash_tupleName=(OtpErlangTuple) elemList;
+				OtpErlangBinary code=(OtpErlangBinary) idHash_tupleName.elementAt(0);// code Hashé
+				 
+							OtpErlangTuple name_node=(OtpErlangTuple)idHash_tupleName.elementAt(1); // recupère l'élément associé au code hashé
+							OtpErlangObject nom=(OtpErlangObject) name_node.elementAt(0); //recupère le nom du process
+							
+							System.out.println("code: "+code.hashCode()+" , "+nom.toString());
+							listNode.add(new Node(code.hashCode(),nom.toString()));
+			}
+			return null;
+		}
+		
+	}
+	
+	static List<Node> getList(){
+		return listNode;
+	}
 	
 	public void reply(OtpErlangPid pid){
 		OtpErlangObject[] msgReply = new OtpErlangObject[2];
@@ -64,10 +109,32 @@ public class ErlangNode extends OtpNode{
 
 	public static void main(String []args) throws Exception{
 		
-		ErlangNode mynode=new ErlangNode("zou@localhost");
-		mynode.ping();
-		OtpErlangPid pid=mynode.receive(mynode, "mbox");			
-		mynode.reply(pid);		
+		final ErlangNode mynode=new ErlangNode("gui@localhost");
+		mynode.ping("here@localhost"); 
+		OtpErlangPid pid=mynode.receiveList(mynode, "mbox");
+		//NodeView nodeView=new NodeView();
+		
+		EventQueue.invokeLater(new Runnable() {       	
+        	
+            @Override
+            public void run() {
+                try {
+                	JFrame f = new JFrame();
+                    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    f.add(new NodeView(mynode)); // n=5 affichage de n process
+                    f.pack();
+                    f.setVisible(true);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        });
+		
+		
+		
+		
+		//mynode.reply(pid);
 		
 	}
 }

@@ -11,6 +11,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
@@ -20,8 +21,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
+import com.ericsson.otp.erlang.OtpErlangObject;
+import com.ericsson.otp.erlang.OtpErlangPid;
+import com.ericsson.otp.erlang.OtpErlangTuple;
+import com.ericsson.otp.erlang.OtpMbox;
+import com.ericsson.otp.erlang.OtpNode;
 
 
+/**
+ * @author Zo
+ * 
+ */
 
 public class NodeView extends JPanel {
 
@@ -36,15 +46,16 @@ public class NodeView extends JPanel {
     private JPanel topPan;
     private JPanel drawerPan;
     Random rand=new Random();
-    
+    OtpMbox mbox;
+    public List<graphics.Node> liste;
     /** @param n  the desired number of circles. 
      * @throws IOException */
-    public NodeView(int n) throws IOException {
+    public NodeView(ErlangNode erl) throws IOException {
         super(true);
         
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(SIZE, SIZE));
-        this.n = n;
+        //this.n = n;
         topPan=new JPanel();
         topPan.setBorder(new TitledBorder("Infos"));
         drawerPan=new JPanel();
@@ -52,7 +63,8 @@ public class NodeView extends JPanel {
         addNode();
         this.add(topPan,BorderLayout.NORTH);
         this.add(drawerPan,BorderLayout.SOUTH);
-      
+        liste=ErlangNode.getList();
+        n=liste.size();
         ErlangNode node=new ErlangNode("master@localhost");
 		//node.receive(node, "mbox");
 		
@@ -65,7 +77,7 @@ public class NodeView extends JPanel {
     	nodeList.put(2, "dave");
     	nodeList.put(3, "eve");
     	nodeList.put(4, "charlie");
-    	System.out.println("Value at 4 ,"+NB_PROC+" "+nodeList.get(4));
+    	//System.out.println("Value at 4 ,"+NB_PROC+" "+nodeList.get(4));
     }
 
     
@@ -88,28 +100,32 @@ public class NodeView extends JPanel {
         g2d.setColor(Color.red);      
         
         for (int i = 0; i < n; i++) {
-        	String identifiant= nodeList.get(i);
-        	int j=rand.nextInt(100);
+        	//String identifiant= nodeList.get(i);
+        	//int j=rand.nextInt(100);
+        	graphics.Node noeud=liste.get(i);
+        	int j=noeud.getIdHache();
+        	String identifiant=noeud.getNode_name();
+        	System.out.println(j+" "+identifiant);
             double t = 2 * Math.PI * j / 10;               //j: id haché du process//NB_PROC; //alpha=(2pi*(val/2¹⁶⁰-2))
-            this.dispProcess(g, g2d, t, r2, identifiant); 
+            this.dispProcess(g, g2d,r2,  t, identifiant); 
             
         }
         
         //taçage des carés verts
-        g2d.setColor(Color.blue);  
+        g2d.setColor(Color.blue);
         
         for (int i = 0; i < n; i++) {
         	String identifiant= nodeList.get(i);        	
         	int j=rand.nextInt(1000000000);
-        	System.out.println(Math.abs(j)+" "+identifiant);
+        	//System.out.println(Math.abs(j)+" "+identifiant);
             double t = 2 * Math.PI * j / 10;               //NB_PROC; //alpha=(2pi*(val/2¹⁶⁰-2))
-            this.dispData(g, g2d, t, r2, identifiant);
+            this.dispData(g, g2d, r2,  t,identifiant);
             
         }
         
     }
     
-    private void dispProcess(Graphics graphic,Graphics2D graphic2D,double t,int radius,String idProcess){
+    private void dispProcess(Graphics graphic,Graphics2D graphic2D,int radius,double t,String idProcess){
     	int x = (int) Math.round(a + r * Math.cos(t));
         int y = (int) Math.round(b + r * Math.sin(t));
         graphic2D.fillOval(x-radius/2, y-radius/2, 30, 30);
@@ -118,7 +134,7 @@ public class NodeView extends JPanel {
         graphic2D.drawImage(createStringImage(graphic, idProcess), aff, this);
     }
     
-    private void dispData(Graphics graphic,Graphics2D graphic2D,double t,int radius,String idProcess){
+    private void dispData(Graphics graphic,Graphics2D graphic2D,int radius,double t,String idProcess){
     	int x = (int) Math.round(a + r * Math.cos(t));
         int y = (int) Math.round(b + r * Math.sin(t));
         graphic2D.fillRect(x-radius/2, y-radius/2, 15, 15);
@@ -128,13 +144,13 @@ public class NodeView extends JPanel {
     }
     
 
-    private static void create() throws IOException {
+   /* private static void create() throws IOException {
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.add(new NodeView(5)); // n=5 affichage de n process
+        f.add(new NodeView()); // n=5 affichage de n process
         f.pack();
         f.setVisible(true);
-    }
+    }*/
     
     
     public BufferedImage createStringImage(Graphics g, String s) {
@@ -153,9 +169,9 @@ public class NodeView extends JPanel {
         return image;
     }
 
-    public static void main(String[] args) throws IOException {
-    	NodeView c=new NodeView(2);
-    	c.addNode();
+    /*public static void main(String[] args) throws IOException {
+    	//NodeView c=new NodeView();
+    	//c.addNode();
         EventQueue.invokeLater(new Runnable() {       	
         	
             @Override
@@ -168,9 +184,10 @@ public class NodeView extends JPanel {
 				}
             }
         });
-    }
+    }*/
     
-    public class Node{
-    	
-    }
+    
+    
+    
+    
 }
