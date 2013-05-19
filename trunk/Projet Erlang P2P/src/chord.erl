@@ -9,16 +9,28 @@
 %% ====================================================================
 -export([chord/3]).
 
+%%
 chord(NodeId, HashTable, NextId) ->
-	io:format("IN CHORD: ~w -> ~w~n", [target(NodeId), target(NextId)]),
+	io:format("~w IN CHORD: ~w -> ~w~n", [self(), target(NodeId), target(NextId)]),
 	receive
-		{lookup, Who, Key} -> Who ! lookup(NodeId, NextId, Key);
-		{get, Who, Key} -> Who ! get(NodeId, HashTable, NextId, Key);
-		{put, _, Key, Data} -> put(NodeId, HashTable, NextId, Key, Data);
+		{lookup, Who, Key} ->
+			Who ! lookup(NodeId, NextId, Key),
+			chord(NodeId, HashTable, NextId);
+		{get, Who, Key} ->
+			Who ! get(NodeId, HashTable, NextId, Key),
+			chord(NodeId, HashTable, NextId);
+		{getself, Who, Key} ->
+			Who ! getself(HashTable, Key),
+			chord(NodeId, HashTable, NextId);
+		{put, _, Key, Data} ->
+			NewHashTable = put(NodeId, HashTable, NextId, Key, Data),
+			chord(NodeId, NewHashTable, NextId);
+		{putself, _, Key, Data} ->
+			NewHashTable = putself(HashTable, Key, Data),
+			chord(NodeId, NewHashTable, NextId);
 		exit -> io:format("EXITING: ~w~n", [target(NodeId)]), exit(target(NodeId));
-		_ -> ok
-	end,
-	chord(NodeId, HashTable, NextId).
+		_ -> chord(NodeId, HashTable, NextId)
+	end.
   
 
 
@@ -43,24 +55,34 @@ lookup(NodeId, NextId, Key) ->
 	Y = id(NextId),
 	if 
 		((Key>X) and (Key<Y)) ->
-		 		NextId;
-		true -> target(NextId) ! {lookup, Key}
-	end,
-	receive 
-		{lookup, Key} -> lookup(NodeId, NextId, Key)
+		 	NextId;
+		((Key>X) and (Y<X)) ->
+			NextId;
+		true -> target(NextId) ! {lookup, self(), Key},
+				receive
+					Value -> Value
+				end
 	end.
 
 %%
-get(NodeId, HashTable, NextId, Key) -> 
-	N = lookup(Key,NodeId,NextId),
+get(NodeId, HashTable, NextId, Key) ->
+	io:format("get ~w~n", [target(NodeId)]),
+	N = lookup(NodeId, NextId, Key),
 	case N of
-		NodeId -> 
-			M = dict:find(Key,HashTable),
-			case M of
-			 {ok, Value} -> Value;
-			 _else -> io:format("KEY NOT FOUND")
-			end;
-		_else -> false
+		NodeId -> getself(HashTable, Key);
+		ResponsibleId ->
+			target(ResponsibleId) ! {getself, self(), Key},
+			receive
+				Value -> Value
+			end
+	end.
+
+%%
+getself(HashTable, Key) ->
+	M = dict:find(Key,HashTable),
+	case M of
+	 {ok, Value} -> Value;
+	 _ -> io:format("KEY NOT FOUND")
 	end.
 	
 
@@ -68,8 +90,14 @@ get(NodeId, HashTable, NextId, Key) ->
 put(NodeId, HashTable, NextId, Key, Data) ->
 	N = lookup(NodeId,NextId,Key),
 	case N of
-		NodeId -> HashTable = dict:store(Key,Data,HashTable);
-		_else -> ok
+		NodeId -> putself(HashTable, Key, Data);
+		ResponsibleId ->
+			target(ResponsibleId) ! {putself, self(), Key, Data},
+			HashTable
 	end.
+
+%%
+putself(HashTable, Key, Data) ->
+	dict:store(Key,Data,HashTable).
 
 
