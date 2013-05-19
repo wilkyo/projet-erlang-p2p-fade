@@ -9,6 +9,8 @@
 %% ====================================================================
 -export([launch/3, init/3, test/0]).
 
+%% To save some time typing the parameters...
+test() -> launch(chord, chord, [alice, dave, eve, bob, charlie]).
 
 %% Initializes a node getting its successor.
 %% @param Mod The module to call when the ring is finished
@@ -19,7 +21,9 @@ init(Mod, Fun, NodeId) ->
 	register(Name, self()),
 	HashTable = dict:new(),
 	receive
-		{next, NextId} -> hello(Mod, Fun, NodeId, HashTable, NextId)
+		{next, NextId} ->
+			Mod:Fun(NodeId, HashTable, NextId);
+		_ -> io:format("ERROR IN INIT ~w~n", [Name])
 	end.
 
 
@@ -35,8 +39,6 @@ launch(Mod, Fun, Names) ->
 	Sorted = lists:sort(Hashed),
 	build(Mod, Fun, Sorted).
 
-
-test() -> launch(chord, chord, [alice, dave, eve, bob, charlie]).
 
 %% ====================================================================
 %% Internal functions
@@ -74,15 +76,6 @@ build(Mod, Fun, [H|T]) ->
 	Pid = spawn(?MODULE, init, [Mod, Fun, H]),
 	Pid ! {next, build_aux(Mod, Fun, T, H)},
 	ok.
-
-hello(Mod, Fun, NodeId, HashTable, NextId) ->
-	io:format("~w/~w:~w # ~w ->~n   ~w~n", [self(), Mod, Fun, NodeId, NextId]),
-	{_, Target} = NextId,
-	Target ! {test, NodeId},
-	receive
-		{test, Val} -> io:format("~w~nReceived: ~w~n", [NodeId, Val])
-	end.
-
 
 
 
