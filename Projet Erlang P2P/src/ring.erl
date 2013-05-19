@@ -19,7 +19,7 @@ init(Mod, Fun, NodeId) ->
 	register(Name, self()),
 	HashTable = dict:new(),
 	receive
-		{next, Next} -> hello(Mod, Fun, NodeId, HashTable, Next)
+		{next, NextId} -> hello(Mod, Fun, NodeId, HashTable, NextId)
 	end.
 
 
@@ -52,8 +52,7 @@ test() -> launch(chord, chord, [alice, dave, eve, bob, charlie]).
 build_aux(Mod, Fun, [H], First) ->
 	Pid = spawn(?MODULE, init, [Mod, Fun, H]),
 	Pid ! {next, First},
-	%io:format("build_auxF end(~w, ~w) Pid: ~w~n", [H, TeteDeListe, Pid]),
-	Pid;
+	H;
 %% Creates a node and asks to create the next.
 %% @param Mod The module to call when the ring is finished
 %% @param Fun The function to call when the ring is finished
@@ -64,7 +63,7 @@ build_aux(Mod, Fun, [H], First) ->
 build_aux(Mod, Fun, [H|T], First) ->
 	Pid = spawn(?MODULE, init, [Mod, Fun, H]),
 	Pid ! {next, build_aux(Mod, Fun, T, First)},
-	Pid.
+	H.
 
 %% Creates the first node and asks to create the next.
 %% @param Mod The module to call when the ring is finished
@@ -73,11 +72,16 @@ build_aux(Mod, Fun, [H|T], First) ->
 %% @param T The Names of the following nodes
 build(Mod, Fun, [H|T]) ->
 	Pid = spawn(?MODULE, init, [Mod, Fun, H]),
-	Pid ! {next, build_aux(Mod, Fun, T, Pid)},
+	Pid ! {next, build_aux(Mod, Fun, T, H)},
 	ok.
 
-hello(Mod, Fun, NodeId, HashTable, Next) ->
-	io:format("~w:~w # ~w~n~w -> ~w~n", [Mod, Fun, NodeId, self(), Next]).
+hello(Mod, Fun, NodeId, HashTable, NextId) ->
+	io:format("~w/~w:~w # ~w ->~n   ~w~n", [self(), Mod, Fun, NodeId, NextId]),
+	{_, Target} = NextId,
+	Target ! {test, NodeId},
+	receive
+		{test, Val} -> io:format("~w~nReceived: ~w~n", [NodeId, Val])
+	end.
 
 
 
