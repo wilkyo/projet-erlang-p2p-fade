@@ -14,16 +14,21 @@ chord(NodeId, HashTable, NextId) ->
 	io:format("~w IN CHORD: ~w -> ~w~n", [self(), target(NodeId), target(NextId)]),
 	receive
 		{lookup, Who, Key} ->
-			Who ! lookup(NodeId, NextId, Key),
+			Msg = lookup(NodeId, NextId, Key),
+			Who ! Msg,
+			logger ! {lookup, Who, Key, Msg},
 			chord(NodeId, HashTable, NextId);
 		{get, Who, Key} ->
-			Who ! get(NodeId, HashTable, NextId, Key),
+			Msg = get(NodeId, HashTable, NextId, Key),
+			Who ! Msg,
+			logger ! {get, NodeId, HashTable, NextId, Key, Msg},
 			chord(NodeId, HashTable, NextId);
 		{getself, Who, Key} ->
 			Who ! getself(HashTable, Key),
 			chord(NodeId, HashTable, NextId);
 		{put, _, Key, Data} ->
 			NewHashTable = put(NodeId, HashTable, NextId, Key, Data),
+			logger ! {NodeId, HashTable, NextId, Key, Data},
 			chord(NodeId, NewHashTable, NextId);
 		{putself, _, Key, Data} ->
 			NewHashTable = putself(HashTable, Key, Data),
