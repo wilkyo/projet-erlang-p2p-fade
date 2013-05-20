@@ -70,14 +70,14 @@ public class ErlangNode extends OtpNode{
 			message=(OtpErlangList) objet;
 			//list=(OtpErlangList) message.elementAt(1); //recupère la liste
 			for(OtpErlangObject elemList: message){
-				OtpErlangTuple idHash_tupleName=(OtpErlangTuple) elemList;
-				OtpErlangBinary code=(OtpErlangBinary) idHash_tupleName.elementAt(0);// code Hashé
+				OtpErlangTuple idHash_Name=(OtpErlangTuple) elemList;
+				OtpErlangLong code=(OtpErlangLong) idHash_Name.elementAt(0);// code Hashé
 				 
-							OtpErlangTuple name_node=(OtpErlangTuple)idHash_tupleName.elementAt(1); // recupère l'élément associé au code hashé
-							OtpErlangObject nom=(OtpErlangObject) name_node.elementAt(0); //recupère le nom du process
+							OtpErlangObject name_node=(OtpErlangObject) idHash_Name.elementAt(1); // recupère l'élément associé au code hashé
+							//OtpErlangObject nom=(OtpErlangObject) name_node.elementAt(1); //recupère le nom du process
 							
-							System.out.println("code: "+code.hashCode()+" , "+nom.toString());
-							listNode.add(new Noeuds(code.hashCode(),nom.toString()));
+							System.out.println("code: "+code+" , "+name_node.toString());
+							listNode.add(new Noeuds(code.longValue(),name_node.toString()));
 			}
 			return null;
 		}
