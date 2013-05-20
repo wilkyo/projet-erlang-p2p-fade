@@ -93,23 +93,23 @@ public class NodeView extends JPanel {
         	//String identifiant= nodeList.get(i);
         	//int j=rand.nextInt(100);
         	Noeuds noeud=liste.get(i);
-        	int j=noeud.getIdHache();
+        	long j=noeud.getIdHache();
         	String identifiant=noeud.getNode_name();
-        	System.out.println(j+" "+identifiant);
-            double t = 2 * Math.PI * j / 10;               //j: id haché du process//NB_PROC; //alpha=(2pi*(val/2¹⁶⁰-2))
-            this.dispProcess(g, g2d,r2,  t, identifiant); 
+        	System.out.println(Math.abs(j)+" "+identifiant);
+            double angle = 2 * Math.PI * Math.abs(j) / NB_PROC;               //j: id haché du process//NB_PROC; //alpha=(2pi*(val/2¹⁶⁰-2))
+            this.dispProcess(g, g2d,r2,  angle, identifiant); 
             
         }
         
-        //taçage des carés verts
+        
         g2d.setColor(Color.blue);
         
         for (int i = 0; i < n; i++) {
         	String identifiant= nodeList.get(i);        	
         	int j=rand.nextInt(1000000000);
         	//System.out.println(Math.abs(j)+" "+identifiant);
-            double t = 2 * Math.PI * j / NB_PROC;               //NB_PROC; //alpha=(2pi*(val/2¹⁶⁰-2))
-            this.dispData(g, g2d, r2,  t,identifiant);
+            double angle = 2 * Math.PI * j / NB_PROC;               //NB_PROC; //alpha=(2pi*(val/2¹⁶⁰-2))
+            this.dispData(g, g2d, r2,  angle,identifiant);
             
         }
         

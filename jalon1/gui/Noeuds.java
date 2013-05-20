@@ -2,20 +2,20 @@ package gui;
 
 public class Noeuds {
 		String node_name;
-		int IdHache;
+		long IdHache;
 		public String getNode_name() {
 			return node_name;
 		}
 		public void setNode_name(String node_name) {
 			this.node_name = node_name;
 		}
-		public int getIdHache() {
+		public long getIdHache() {
 			return IdHache;
 		}
-		public void setIdHache(int idHache) {
+		public void setIdHache(long idHache) {
 			IdHache = idHache;
 		}
-		public Noeuds(int idHache,String node_name) {
+		public Noeuds(long idHache,String node_name) {
 			super();
 			this.node_name = node_name;
 			IdHache = idHache;
