@@ -27,8 +27,8 @@ chord(NodeId, HashTable, NextId) ->
 			Who ! getself(HashTable, Key),
 			chord(NodeId, HashTable, NextId);
 		{put, _, Key, Data} ->
-			NewHashTable = put(NodeId, Key, Data),
-			logger ! {put, NodeId, Key, Data},
+			NewHashTable = put(NodeId, HashTable, NextId, Key, Data),
+			logger ! {NodeId, Key, Data},
 			chord(NodeId, NewHashTable, NextId);
 		{putself, _, Key, Data} ->
 			NewHashTable = putself(HashTable, Key, Data),
