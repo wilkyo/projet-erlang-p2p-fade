@@ -41,14 +41,18 @@ launch(Mod, Fun, Names) ->
 					   end, Names),
 	Sorted = lists:sort(Hashed),
 	build(Mod, Fun, Sorted),
-	{mbox, gui@localhost} ! Sorted,
-	io:format("build finished ~w~n", [Sorted]).
+	{mbox, gui@localhost} ! prepare(Sorted),
+	io:format("build finished ~w~n", [prepare(Sorted)]).
 
 
 %% ====================================================================
 %% Internal functions
 %% ====================================================================
 
+%% Cleans the List for the gui.
+prepare([]) -> [];
+prepare([{Id, {Name, _}}|T]) ->
+	[{binary:decode_unsigned(Id, big), Name}|prepare(T)].
 
 %% Creates the last node and sets its next to the first node of the ring.
 %% @param Mod The module to call when the ring is finished
