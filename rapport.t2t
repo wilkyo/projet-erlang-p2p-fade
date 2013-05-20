@@ -34,6 +34,11 @@ Le fichier chord.erl permet principalement la gestion des fonctions lookup/3, ge
 
 == Journalisation ==
 
+La journalisation consiste en l'édition de fichiers de logs : A chaque fois qu'une fonction est appelée, une description de l'action est écrite dans un fichier de log. Ce fichier porte comme nom la date et l'heure (heure(s), minute(s), seconde(s)) de l'exécution du programme. 
+
+- Fonctionnement :
+
+Un processus "logger" est créé lors de la création de l'anneau. Lorsqu'une action est effectuée, le processus courant envoie un message à "logger" indiquant les détails de l'action. Les messages envoyés à logger sont traités dans la fonction wait/1 du fichier logger.erl. C'est dans cette fonction que l'on écrit les informations dans le fichier ``Filename`` (donné en entrée), par rapport au message envoyé.
 
 
 == Interface graphique ==
