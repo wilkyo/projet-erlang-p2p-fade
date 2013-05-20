@@ -16,7 +16,7 @@ chord(NodeId, HashTable, NextId) ->
 		{lookup, Who, Key} ->
 			Msg = lookup(NodeId, NextId, Key),
 			Who ! Msg,
-			logger ! {lookup, Who, Key, Msg},
+			logger ! {lookup, Who, NodeId, Key, Msg},
 			chord(NodeId, HashTable, NextId);
 		{get, Who, Key} ->
 			Msg = get(NodeId, HashTable, NextId, Key),
@@ -28,7 +28,7 @@ chord(NodeId, HashTable, NextId) ->
 			chord(NodeId, HashTable, NextId);
 		{put, _, Key, Data} ->
 			NewHashTable = put(NodeId, HashTable, NextId, Key, Data),
-			logger ! {NodeId, Key, Data},
+			logger ! {put, NodeId, Key, Data},
 			chord(NodeId, NewHashTable, NextId);
 		{putself, _, Key, Data} ->
 			NewHashTable = putself(HashTable, Key, Data),
