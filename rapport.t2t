@@ -11,34 +11,55 @@ Vincent FAUVEAU, Willy FRANÇOIS, Zo RABARIJAONA
 
 == Création du cercle ==
 
+Le fichier ring.erl permet la création de l'anneau pour exécuter chord.
+
+- 
 
 == Chord ==
-Le fichier chord.erl permet principalement la gestion des fonctions lookup/3, get/4 et put/5, par le biai de chord/3.
+
+Le fichier chord.erl permet principalement la gestion des fonctions lookup/3, get/4 et put/5, par le biais de chord/3.
 
 - La fonction lookup/3 : 
 
- Cette fonction prend en entrée 3 paramètres : NodeId, NextId et Key. NodeId identifie le processus courant, au sens premier du terme, et NextId son processus suivant. Key correspond à la clé hachée que l'on cherche. Lookup vérifie si la clé se situe entre l'identifiant (haché) courant et l'identifiant (haché) suivant. Si tel est bien le cas, lookup retourne le processus suivant, sinon elle envoie un message qui fera exécuter de nouveau lookup sur le suivant.
+ Cette fonction prend en entrée 3 paramètres : NodeId, NextId et Key.
+ NodeId identifie le noeud courant, au sens chord du terme, et NextId son noeud suivant.
+ Key correspond à la clé hachée que l'on cherche.
+ Lookup vérifie si la clé se situe entre l'identifiant (haché) courant et l'identifiant (haché) suivant.
+ Si tel est bien le cas, lookup retourne le processus suivant, sinon elle envoie un message qui fera exécuter de nouveau lookup sur le suivant.
 
 - La fonction get/4 :
 
- Cette fonction prend en entrée 4 paramètres : NodeId, HashTable, NextId et Key. Les arguments NodeId, NextId et Key correspondent à ceux de la fonction lookup. HashTable quand à elle désigne la table de hachage dans laquelle on va prendre la donnée. La méthode cherche pour un processus NodeId si le processus renvoyé par lookup correspond a ce processus. Si c'est le cas, elle récupère la donnée dans sa table de hachage, sinon elle envoie un message au processus retourné par lookup pour lui demander la donnée (par le biai de la fonction getself/2).
+ Cette fonction prend en entrée 4 paramètres : NodeId, HashTable, NextId et Key.
+ Les arguments NodeId, NextId et Key correspondent à ceux de la fonction lookup. HashTable quand à elle désigne la table de hachage dans laquelle on va prendre la donnée.
+ La méthode cherche pour un noeud NodeId si le noeud renvoyé par lookup correspond a celui-ci.
+ Si c'est le cas, elle récupère la donnée dans sa table de hachage, sinon elle envoie un message au processus retourné par lookup pour lui demander la donnée (par le bias de la fonction getself/2).
 
 - La fonction put/5 :
 
- Cette fonction prend en entrée 5 paramètres : NodeId, HashTable, NextId, Key et Data. Les arguments NodeId, HashTable, NextId et Key ont le même rôle que ceux de la fonction get. Le paramètre Data correspong à la donnée que l'on veut mettre dans la table de hachage. La méthode fonctionne comme get : on utilise lookup pour chercher le processus à qui on va confier la donnée, puis on enregistre la donnée dans se table de hashage (avec la fonction auxiliaire putself/3).
+ Cette fonction prend en entrée 5 paramètres : NodeId, HashTable, NextId, Key et Data.
+ Les arguments NodeId, HashTable, NextId et Key ont le même rôle que ceux de la fonction get.
+ Le paramètre Data correspond à la donnée que l'on veut mettre dans la table de hachage.
+ La méthode fonctionne comme get : on utilise lookup pour chercher le noeud à qui on va confier la donnée, puis on enregistre la donnée dans sa table de hashage (avec la fonction auxiliaire putself/3).
 
 - La fonction chord/3 :
 
- C'est la fonction principale de chord.erl. Elle permet de recevoir les messages lookup, get et put et d'agir en conséquence. Elle prend en paramètres les 3 données qui définissent un processus : NodeId (le processus en question), HashTable (sa table de hachage) et NextId (le processus suivant). Suivant le message qu'elle recoit, elle appelle soit lookup, get ou put.
+ C'est la fonction principale de chord.erl.
+ Elle permet de recevoir les messages lookup, get et put et d'agir en conséquence.
+ Elle prend en paramètres les 3 données qui définissent un processus : NodeId (le noeud en question), HashTable (sa table de hachage) et NextId (le noeud suivant).
+ Suivant le message qu'elle recoit, elle appelle soit lookup, get ou put.
 
 
 == Journalisation ==
 
-La journalisation consiste en l'édition de fichiers de logs : A chaque fois qu'une fonction est appelée, une description de l'action est écrite dans un fichier de log. Ce fichier porte comme nom la date et l'heure (heure(s), minute(s), seconde(s)) de l'exécution du programme. 
+La journalisation consiste en l'édition de fichiers de logs : A chaque fois qu'une fonction est appelée, une description de l'action est écrite dans un fichier de log.
+Ce fichier porte comme nom la date et l'heure (heure(s), minute(s), seconde(s)) de l'exécution du programme afin d'avoir à chaque fois un fichier différent. 
 
 - Fonctionnement :
 
-Un processus "logger" est créé lors de la création de l'anneau. Lorsqu'une action est effectuée, le processus courant envoie un message à "logger" indiquant les détails de l'action. Les messages envoyés à logger sont traités dans la fonction wait/1 du fichier logger.erl. C'est dans cette fonction que l'on écrit les informations dans le fichier ``Filename`` (donné en entrée), par rapport au message envoyé.
+Un processus "logger" est créé lors de la création de l'anneau.
+Lorsqu'une action est effectuée, le processus courant envoie un message à "logger" indiquant les détails de l'action.
+Les messages envoyés à logger sont traités dans la fonction wait/1 du fichier logger.erl.
+C'est dans cette fonction que l'on écrit les informations dans le fichier ``Filename`` (donné en entrée), par rapport au message envoyé.
 
 
 == Interface graphique ==
