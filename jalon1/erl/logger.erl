@@ -26,8 +26,8 @@ wait(Filename) ->
 		{create, Id} -> file:write_file(Filename, io_lib:fwrite("~p~n", [Id]), [append]);
 		{next, Id, NextId} -> file:write_file(Filename, io_lib:fwrite("~p.next = ~p.~n", [Id, NextId]), [append]);
 		{lookup, Id, Key, Res} -> file:write_file(Filename, io_lib:fwrite("lookup(~p,~p) = ~p~n", [Id, Key, Res]), [append]);
-		{get, NodeId, HashTable, NextId, Key, Res} ->  file:write_file(Filename, io_lib:fwrite("get(~p,~p,~p,~p) = ~p~n", [NodeId, HashTable, NextId, Key, Res]), [append]);
-		{NodeId, HashTable, NextId, Key, Data} -> file:write_file(Filename, io_lib:fwrite("put(~p,~p,~p,~p,~p)", [NodeId, HashTable, NextId, Key, Data]), [append])
+		{get, NodeId, Key, Res} ->  file:write_file(Filename, io_lib:fwrite("get(~p,~p) = ~p~n", [NodeId, Key, Res]), [append]);
+		{put, NodeId, Key, Data} -> file:write_file(Filename, io_lib:fwrite("put(~p,~p,~p)~n", [NodeId, Key, Data]), [append])
 	end,
 	wait(Filename).
 
