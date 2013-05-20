@@ -1,8 +1,10 @@
 Rapport Projet Erlang de Peer en Peer
 Vincent FAUVEAU, Willy FRANÇOIS, Zo RABARIJAONA
 %%mtime(%d/%m/%Y)
-%!target: html
+%!target: xhtml
+%!outfile: rapport.html
 %!encoding: UTF-8
+%!postproc(xhtml): @br@ <br />
 
 =  Introduction  =
 
@@ -13,7 +15,36 @@ Vincent FAUVEAU, Willy FRANÇOIS, Zo RABARIJAONA
 
 Le fichier ring.erl permet la création de l'anneau pour exécuter chord.
 
-- 
+- La fonction launch/3 :
+
+Cette fonction prend 3 paramètres en entrée: Mod, Fun, Names.
+Mod et Fun correspondent au module et à la fonction de ce module à appeler.
+Names est une liste d'atomes erlang pour nommer les noeuds de l'anneau (alice, eve...).
+Elle commence par créer le logger et l'enregistrer sous l'atôme logger.
+Ensuite, elle prépare les noeuds pour la création de l'anneau:
+À un atome, elle associe son noeud erlang (obtenu à l'aide de node/0) et le tout est haché en sha1.
+Un couple de ce hachage et de l'association précédente est fait.
+La liste obtenue est ensuite triée en fonction du hachage obtenu et la fonction build/3 est appelée.
+Pour finir, on prépare la liste pour l'interface Java à l'aide de la fonction prepare/1 et on lui envoie à l'adresse {mbox, gui@localhost}.
+
+- La fonction prepare/1 :
+
+Cette fonction prend la liste précédemment triée en paramètre et décode les identifiants hachés en entiers non signés afin que l'interface Java puisse les traiter plus facilement.
+
+- La fonction build/3 :
+
+Cette fonction reprend les 2 premiers paramètres de launch et la liste de noeuds triée en fonction de l'identifiant haché.
+Elle exécute un parcourt récursif qui crée un processus sur la fonction init/3 et lui envoie comme message {next, NoeudSuivant}.
+Le noeud suivant s'obtient par appel récursif sur build_aux/4 (qui garde le premier noeud du cercle pour le donner en suivant du dernier) qui retourne le noeud qu'il est en train de créer.
+
+- La fonction init/3 :
+
+Cette fonction est appelée par les processus de l'anneau à leur création.
+Ses deux premiers paramètres sont les mêmes que les deux premiers de launch et build.
+Elle se contente de créer la table de hachage du noeud et de recevoir son noeud suivant afin de pouvoir lancer la fonction du module passé en paramètre.
+Cette fonction est évidemment chord du module chord.
+Des messages sont envoyés au logger pendant cette fonction.
+
 
 == Chord ==
 
@@ -75,3 +106,6 @@ C'est dans cette fonction que l'on écrit les informations dans le fichier ``Fil
 
 
 = Conclusion =
+
+
+

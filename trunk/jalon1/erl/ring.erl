@@ -41,8 +41,7 @@ launch(Mod, Fun, Names) ->
 					   end, Names),
 	Sorted = lists:sort(Hashed),
 	build(Mod, Fun, Sorted),
-	{mbox, gui@localhost} ! prepare(Sorted),
-	io:format("build finished ~w~n", [prepare(Sorted)]).
+	{mbox, gui@localhost} ! prepare(Sorted).
 
 
 %% ====================================================================
