@@ -95,8 +95,14 @@ C'est dans cette fonction que l'on écrit les informations dans le fichier ``Fil
 
 == Interface graphique ==
 
+L'interface graphique pour le Chord a été faite en Java à l'aide de JInterface.
+Elle crée une boîte au lettre nommée mbox sur le noeud erlang gui@localhost et attend les messages du programme erlang.
+Quand un premier message est reçu, les noeuds sont dessinés sur le cercle.
+Un calcul de l'angle est fait en fonction de l'identifiant haché codé en entier non signé.
+Malheureusement, le calcul n'est pas tout à fait correct et ne donne pas ce que l'on veut.
+
 
 
 = Conclusion =
 
-
+Nous avons compris un peu mieux le fonctionnement de la machine erlang et regrettons de ne pas avoir pu aller plus loin.

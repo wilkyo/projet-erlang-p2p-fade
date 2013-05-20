@@ -3,7 +3,7 @@ Pour compiler un jalon, rendez vous dans son dossier et faites make.
 Pour exécuter la partie java, faites make java.
 Pour exécuter la partie erlang, vous pouvez faire ./run.
 
-
+Exemples de commandes:
 H = crypto:sha(term_to_binary(test)).
 dave ! {put, self(), H, test}.
 eve ! {get, self(), H}.
