@@ -1,4 +1,4 @@
-Rapport Projet Erlang de Peer en Peer
+Rapport Projet Erlang de Peer en Peer [Groupe fade]
 Vincent FAUVEAU, Willy FRANÇOIS, Zo RABARIJAONA
 %%mtime(%d/%m/%Y)
 %!target: xhtml
@@ -96,16 +96,7 @@ C'est dans cette fonction que l'on écrit les informations dans le fichier ``Fil
 == Interface graphique ==
 
 
-=  Jalon 2  =
-
-== Chord ==
-
-== Journalisation ==
-
-== Interface graphique ==
-
 
 = Conclusion =
-
 
 
