@@ -23,7 +23,8 @@ init() ->
 
 wait(Filename) ->
 	receive
-		{create, Id} -> io:format("~w created~n", [Id]), file:write_file(Filename, io_lib:fwrite("~p created.~n", [Id]), [append])
+		{create, Id} -> file:write_file(Filename, io_lib:fwrite("~p~n", [Id]), [append]);
+		{next, Id, NextId} -> file:write_file(Filename, io_lib:fwrite("~p.next = ~p.~n", [Id, NextId]), [append])
 	end,
 	wait(Filename).
 

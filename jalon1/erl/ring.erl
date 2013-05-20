@@ -23,6 +23,7 @@ init(Mod, Fun, NodeId) ->
 	HashTable = dict:new(),
 	receive
 		{next, NextId} ->
+			logger ! {next, NodeId, NextId},
 			Mod:Fun(NodeId, HashTable, NextId);
 		_ -> io:format("ERROR IN INIT ~w~n", [Name])
 	end.

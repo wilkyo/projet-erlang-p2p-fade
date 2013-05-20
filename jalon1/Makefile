@@ -18,7 +18,7 @@ main:
 	erl -compile $(SOURCEFILESE)
 	javac -classpath $(LIBS) $(SOURCEFILESJ)
 
-run:
+java:
 	java -classpath $(LIBS) $(EXEC)
 
 # Pour le nettoyage complet d'une compilation.
