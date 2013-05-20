@@ -19,6 +19,7 @@ test() -> launch(chord, chord, [alice, dave, eve, bob, charlie]).
 init(Mod, Fun, NodeId) ->
 	{_, {Name, _}} = NodeId,
 	register(Name, self()),
+	logger ! {create, NodeId},
 	HashTable = dict:new(),
 	receive
 		{next, NextId} ->
@@ -32,6 +33,7 @@ init(Mod, Fun, NodeId) ->
 %% @param Fun The function to call when the ring is finished
 %% @param Names The list of names for the nodes of the ring
 launch(Mod, Fun, Names) ->
+	register(logger, spawn(logger, init, [])),
 	Hashed = lists:map(fun(T) ->
 							   Couple = {T, node()},
 							   {crypto:sha(term_to_binary(Couple)), Couple}
