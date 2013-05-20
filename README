@@ -1,0 +1,5 @@
+
+
+H = crypto:sha(term_to_binary(test)).
+eve ! {get, self(), H}.
+
