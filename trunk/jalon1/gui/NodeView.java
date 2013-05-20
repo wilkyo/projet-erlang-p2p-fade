@@ -1,29 +1,21 @@
+package gui;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
-
-import com.ericsson.otp.erlang.OtpErlangObject;
-import com.ericsson.otp.erlang.OtpErlangPid;
-import com.ericsson.otp.erlang.OtpErlangTuple;
-import com.ericsson.otp.erlang.OtpMbox;
-import com.ericsson.otp.erlang.OtpNode;
 
 
 /**
@@ -33,19 +25,21 @@ import com.ericsson.otp.erlang.OtpNode;
 
 public class NodeView extends JPanel {
 
-    private static final int SIZE = 512;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final int SIZE = 512;
     private static final double NB_PROC=2^160-2;
     private int a = SIZE / 2;
     private int b = a;
     private int r = 4 * SIZE / 5;
     private int n;
     private Hashtable<Integer,String> nodeList=new Hashtable<Integer,String>();
-    private JLabel label;
     private JPanel topPan;
     private JPanel drawerPan;
     Random rand=new Random();
-    OtpMbox mbox;
-    public List<Node> liste;
+    public List<Noeuds> liste;
     /** @param n  the desired number of circles. 
      * @throws IOException */
     public NodeView(ErlangNode erl) throws IOException {
@@ -63,10 +57,8 @@ public class NodeView extends JPanel {
         this.add(drawerPan,BorderLayout.SOUTH);
         liste=ErlangNode.getList();
         n=liste.size();
-        ErlangNode node=new ErlangNode("master@localhost");
-		//node.receive(node, "mbox");
-		
-        
+        JLabel nombreProc=new JLabel("Nombre de Processus :"+n);
+        topPan.add(nombreProc);
     }
     
     public void addNode(){
@@ -100,7 +92,7 @@ public class NodeView extends JPanel {
         for (int i = 0; i < n; i++) {
         	//String identifiant= nodeList.get(i);
         	//int j=rand.nextInt(100);
-        	Node noeud=liste.get(i);
+        	Noeuds noeud=liste.get(i);
         	int j=noeud.getIdHache();
         	String identifiant=noeud.getNode_name();
         	System.out.println(j+" "+identifiant);
@@ -116,7 +108,7 @@ public class NodeView extends JPanel {
         	String identifiant= nodeList.get(i);        	
         	int j=rand.nextInt(1000000000);
         	//System.out.println(Math.abs(j)+" "+identifiant);
-            double t = 2 * Math.PI * j / 10;               //NB_PROC; //alpha=(2pi*(val/2¹⁶⁰-2))
+            double t = 2 * Math.PI * j / NB_PROC;               //NB_PROC; //alpha=(2pi*(val/2¹⁶⁰-2))
             this.dispData(g, g2d, r2,  t,identifiant);
             
         }
