@@ -1,15 +1,6 @@
-import java.awt.Color;
+package gui;
 import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.image.ImageObserver;
 import java.io.IOException;
-import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +11,7 @@ import com.ericsson.otp.erlang.*;
 public class ErlangNode extends OtpNode{
 	
 	OtpMbox mbox;
-	static List<Node> listNode=new ArrayList<Node>();
+	static List<Noeuds> listNode=new ArrayList<Noeuds>();
 	
 	public ErlangNode(String nameNode) throws IOException {
 		super(nameNode);
@@ -86,14 +77,14 @@ public class ErlangNode extends OtpNode{
 							OtpErlangObject nom=(OtpErlangObject) name_node.elementAt(0); //recupère le nom du process
 							
 							System.out.println("code: "+code.hashCode()+" , "+nom.toString());
-							listNode.add(new Node(code.hashCode(),nom.toString()));
+							listNode.add(new Noeuds(code.hashCode(),nom.toString()));
 			}
 			return null;
 		}
 		
 	}
 	
-	static List<Node> getList(){
+	static List<Noeuds> getList(){
 		return listNode;
 	}
 	
@@ -129,11 +120,6 @@ public class ErlangNode extends OtpNode{
 				}
             }
         });
-		
-		
-		
-		
-		//mynode.reply(pid);
-		
+
 	}
 }
