@@ -21,14 +21,14 @@ chord(NodeId, HashTable, NextId) ->
 		{get, Who, Key} ->
 			Msg = get(NodeId, HashTable, NextId, Key),
 			Who ! Msg,
-			logger ! {get, NodeId, HashTable, NextId, Key, Msg},
+			logger ! {get, NodeId, Key, Msg},
 			chord(NodeId, HashTable, NextId);
 		{getself, Who, Key} ->
 			Who ! getself(HashTable, Key),
 			chord(NodeId, HashTable, NextId);
 		{put, _, Key, Data} ->
-			NewHashTable = put(NodeId, HashTable, NextId, Key, Data),
-			logger ! {NodeId, HashTable, NextId, Key, Data},
+			NewHashTable = put(NodeId, Key, Data),
+			logger ! {put, NodeId, Key, Data},
 			chord(NodeId, NewHashTable, NextId);
 		{putself, _, Key, Data} ->
 			NewHashTable = putself(HashTable, Key, Data),
