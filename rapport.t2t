@@ -1,0 +1,30 @@
+Rapport Projet Erlang de Peer en Peer
+Vincent FAUVEAU, Willy FRANÇOIS, Zo Rabarijaona
+%%mtime(%d/%m/%Y)
+%!target: html
+%!encoding: UTF-8
+
+=  Introduction  =
+
+
+=  Jalon 1  =
+
+== Création du cercle ==
+
+== Chord ==
+
+== Journalisation ==
+
+== Interface graphique ==
+
+
+=  Jalon 2  =
+
+== Chord ==
+
+== Journalisation ==
+
+== Interface graphique ==
+
+
+= Conclusion =
